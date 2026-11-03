@@ -28,6 +28,7 @@ export const router = createRouter({
         {
             path: '/proyectos/:id',
             component: () => import('../views/ProyectoView.vue'),
+            meta: { requireAuth: true },
             props: (route) => ({ id:idDe(route)}),
             children: [
                 {
@@ -48,6 +49,10 @@ export const router = createRouter({
 
 //guards globales: corre antes de cada navegacion
 router.beforeEach((to) => {
+    
+    //obtenemos el usuario actual desde firebase
+
+
     const sesion = useSesionStore()
 
     if(to.meta.requireAuth && !sesion.autenticado) {

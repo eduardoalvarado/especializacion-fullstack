@@ -1,33 +1,33 @@
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import { defineStore } from 'pinia'
 import type { Usuario } from '../types'
-import { borrar, guardar, leer } from '@/lib/almacenamiento'
 
-const CLAVE = 'taskflow:sesion'
 
-export const USUARIOS_DEMO: Usuario[] = [
-  { id: 1, nombre: 'Ana', rol: 'admin' },
-  { id: 2, nombre: 'Luis', rol: 'miembro' },
-]
+
 
 export const useSesionStore = defineStore('sesion', () => {
 
-  const usuario = ref<Usuario | null>(leer<Usuario | null >(CLAVE, null))
+  //state
 
+  
+
+  const usuario = computed<Usuario | null>(() =>
+    actual.value
+      ? {
+          id: actual.value.uid,
+          nombre: actual.value.displayName ?? actual.value.email ?? 'Tú',
+          rol: 'admin',
+        }
+      : null,
+  )
+
+  //getters
   const autenticado = computed(() => usuario.value !== null)
-
   const esAdmin = computed(() => usuario.value?.rol === 'admin')
 
-  watch(usuario, (valor) => (valor ? guardar(CLAVE, valor) : borrar(CLAVE)))
-
-  function entrar(id: number) {
-    usuario.value = USUARIOS_DEMO.find((u) => u.id === id) ?? null
-  }
-
-  function salir() {
-    usuario.value = null
-  }
+  //actions
 
 
-  return { usuario, autenticado, esAdmin, entrar, salir }
+
+  return { usuario, autenticado, esAdmin, entrar, salir, entrarConGoogle, registrar }
 })

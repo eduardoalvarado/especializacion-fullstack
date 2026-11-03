@@ -5,11 +5,16 @@ import { useSesionStore } from '../stores/sesion'
 import { useTareasStore } from '../stores/tareas'
 import { useRouter } from 'vue-router'
 
+
 const tareas = useTareasStore()
 const preferencias = usePreferenciasStore()
 const sesion = useSesionStore()
 //uso de router
 const router = useRouter()
+
+// usamos firebase
+
+
 //storeToRefs mantiene la reactivdada al sacar una copia del state y los getters del store
 const { usuario } = storeToRefs(sesion)
 
@@ -32,6 +37,7 @@ function salir() {
       <div class="flex items-baseline gap-3">
         <h1 class="text-xl font-bold">TaskFlow</h1>
         <span class="text-sm">{{ tareas.pendientes }} por hacer</span>
+        
       </div>
       <nav>
         <RouterLink
