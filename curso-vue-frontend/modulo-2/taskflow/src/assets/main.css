@@ -1,3 +1,20 @@
 @import 'tailwindcss';
 
+/* El tema oscuro se activa con la clase "dark" en <html>, no esta disponible para usar con el sistema operativo */
 @custom-variant dark (&:where(.dark, .dark *));
+
+
+/* View Transitions: la raíz se funde en 0.25 s y los elementos con nombre viajan de una vista a otra */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.25s;
+}
+
+/* Quien pide reducir el movimiento no ve animación */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

@@ -1,5 +1,10 @@
 <script setup lang="ts">
 import BarraSuperior from './components/BarraSuperior.vue'
+import { useProyectosStore } from './stores/proyectos.ts';
+import { useTareasStore } from './stores/tareas.ts';
+
+useTareasStore().cargar()
+useProyectosStore().cargar()
 
 </script>
 

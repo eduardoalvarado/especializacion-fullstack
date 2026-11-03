@@ -1,21 +1,29 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { usePreferenciasStore } from '../stores/preferencias'
-import { USUARIOS_DEMO, useSesionStore } from '../stores/sesion'
+import { useSesionStore } from '../stores/sesion'
 import { useTareasStore } from '../stores/tareas'
+import { useRouter } from 'vue-router'
+
 const tareas = useTareasStore()
 const preferencias = usePreferenciasStore()
 const sesion = useSesionStore()
+//uso de router
+const router = useRouter()
+//storeToRefs mantiene la reactivdada al sacar una copia del state y los getters del store
 const { usuario } = storeToRefs(sesion)
 
 const enlaces = [
   {
-    name:'proyectos',
-    texto: 'Proyectos'
-  }
+    name: 'proyectos',
+    texto: 'Proyectos',
+  },
 ] as const
 
-
+function salir() {
+  sesion.salir()
+  router.push({ name: 'login' })
+}
 </script>
 
 <template>
@@ -26,12 +34,12 @@ const enlaces = [
         <span class="text-sm">{{ tareas.pendientes }} por hacer</span>
       </div>
       <nav>
-        <RouterLink 
-        v-for="enlace in enlaces" 
-        :key="enlace.name" 
-        :to="{ name: enlace.name}"
-        class="rounded px-2 py-1 hover:bg-white/10"
-        active-class="bg-white/20 font-semibold"
+        <RouterLink
+          v-for="enlace in enlaces"
+          :key="enlace.name"
+          :to="{ name: enlace.name }"
+          class="rounded px-2 py-1 hover:bg-white/10"
+          active-class="bg-white/20 font-semibold"
         >
           {{ enlace.texto }}
         </RouterLink>
@@ -51,21 +59,18 @@ const enlaces = [
           <button
             type="button"
             class="rounded border border-white/40 px-2 py-1 hover:bg-white/10"
-            @click="sesion.salir()"
+            @click="salir"
           >
             Salir
           </button>
         </template>
         <template v-else>
-          <button
-            v-for="u in USUARIOS_DEMO"
-            :key="u.id"
-            type="button"
+          <RouterLink
+            :to="{ name: 'login' }"
             class="rounded bg-white px-2 py-1 text-sky-700 hover:bg-sky-50"
-            @click="sesion.entrar(u.id)"
           >
-            Entrar como {{ u.nombre }}
-          </button>
+            Entrar
+          </RouterLink>
         </template>
       </div>
     </div>

@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useTareasStore } from '../stores/tareas'
+
+const props = defineProps<{proyectoId: number}>()
 const tareas = useTareasStore()
 const titulo = ref('')
+
 function enviar() {
   const limpio = titulo.value.trim()
   if (!limpio) return
-  tareas.agregar(limpio)
+  tareas.agregar(limpio, props.proyectoId)
   titulo.value = ''
 }
 </script>

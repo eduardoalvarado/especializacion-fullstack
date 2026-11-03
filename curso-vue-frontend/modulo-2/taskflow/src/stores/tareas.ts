@@ -23,9 +23,9 @@ export const useTareasStore = defineStore('tareas', () => {
   })
 
   // actions
-  async function agregar (titulo: string) {
+  async function agregar (titulo: string, proyectId = 1) {
     try {
-      tareas.value.push(await crearTareas(titulo))
+      tareas.value.push(await crearTareas(titulo, proyectId))
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Error desconocido'
     }
