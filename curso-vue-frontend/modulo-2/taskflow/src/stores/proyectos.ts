@@ -1,25 +1,20 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { fetchProyectos } from '../services/tareasApi'
 import type { Proyecto } from '../types'
+
+const CATALOGO: Proyecto[] = [
+    {id: 1, nombre: 'Sitio web'},
+    {id: 2, nombre: 'App movil'},
+    {id: 3, nombre: 'App Lanzamiento'}
+]
 
 
 export const useProyectosStore = defineStore('proyectos', () => {
-    const proyectos = ref<Proyecto[]>([])
-    const cargando = ref(false)
-
-    async function cargar() {
-        cargando.value = true
-        try {
-            proyectos.value = await fetchProyectos()
-        } finally {
-            cargando.value = false
-        }
-    }
+    const proyectos = ref(CATALOGO)
 
     function porId(id: number) {
         return proyectos.value.find((p) => p.id === id)
     }
 
-    return { proyectos, porId, cargar, cargando}
+    return { proyectos, porId}
 })

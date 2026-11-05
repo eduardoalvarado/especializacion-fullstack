@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useProyectosStore } from '../stores/proyectos'
+import Puede from '@/components/Puede.vue'
 
 const props = defineProps<{ id: number }>()
 
@@ -13,10 +14,7 @@ const proyecto = computed(() => proyectos.porId(props.id))
     ← Proyectos
   </RouterLink>
 
-  <p v-if="proyectos.cargando" class="animate-pulse text-center text-slate-500">
-    Cargando proyecto…
-  </p>
-  <p v-else-if="!proyecto" class="text-center text-slate-500">Este proyecto no existe.</p>
+  <p v-if="!proyecto" class="text-center text-slate-500">Este proyecto no existe.</p>
   <template v-else>
     <h2 class="text-2xl font-bold" :style="{ viewTransitionName: `proyecto-${id}` }">
       {{ proyecto.nombre }}
@@ -30,6 +28,15 @@ const proyecto = computed(() => proyectos.porId(props.id))
       >
         Tareas
       </RouterLink>
+      <Puede permiso="proyecto:ajustes">
+        <RouterLink
+          :to="{ name: 'proyecto-ajustes', params: { id } }"
+          class="-mb-px border-b-2 border-transparent px-3 py-2 hover:text-sky-600"
+          active-class="border-sky-600 font-semibold text-sky-600"
+        >
+          Ajustes
+        </RouterLink>
+      </Puede>
     </nav>
     <RouterView />
   </template>

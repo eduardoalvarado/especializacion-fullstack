@@ -1,60 +1,66 @@
 import { defineStore } from 'pinia'
-import type { Tarea, Filtro } from '../types'
+import type { Tarea, Filtro, Estado } from '../types'
 import { ref, computed } from 'vue'
-import { crearTareas, fetchTareas } from '@/services/tareasApi'
+import { db } from '../services/firebase'
+import { useSesionStore } from './sesion'
+import { addDoc, collection, deleteDoc, doc, query, updateDoc, where } from 'firebase/firestore'
+import { useCollection } from 'vuefire'
+
+const SIGUIENTE: Record<Estado, Estado> = {
+  pendiente: 'en-curso',
+  'en-curso': 'hecha',
+  hecha: 'hecha',
+}
 
 export const useTareasStore = defineStore('tareas', () => {
-  
-    //state
-  const tareas = ref<Tarea[]>([])
+  const sesion = useSesionStore()
   const filtro = ref<Filtro>('todas')
-  const cargando = ref(false)
-  const error = ref<string | null>(null)
+
+  //state
+  const {
+    data,
+    pending: cargando,
+    error,
+  } = useCollection<Tarea>(() =>
+    sesion.usuario ? query(collection(db, 'tareas'), where('uid', '==', sesion.usuario.id)) : null,
+  )
+
+  const tareas = computed(() => [...data.value].sort((a, b) => a.creada - b.creada))
 
   //getters
-  const visibles = computed(() => 
+  const visibles = computed(() =>
     filtro.value === 'todas'
       ? tareas.value
-      : tareas.value.filter((tarea) => tarea.estado === filtro.value)
-)
-   
-  const pendientes = computed(()=> {
-    tareas.value.filter((tarea) => tarea.estado !== 'hecha').length
-  })
+      : tareas.value.filter((tarea) => tarea.estado === filtro.value),
+  )
+
+  const pendientes = computed(() => tareas.value.filter((tarea) => tarea.estado !== 'hecha').length)
 
   // actions
-  async function agregar (titulo: string, proyectId = 1) {
-    try {
-      tareas.value.push(await crearTareas(titulo, proyectId))
-    } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Error desconocido'
-    }
+  const agregar = (titulo: string, proyectoId = 1) => addDoc(collection(db, 'tareas'), {
+    titulo,
+    proyectoId,
+    estado: 'pendiente',
+    uid: sesion.usuario?.id,
+    creada: Date.now()
+  })
+
+  function avanzar(id: string) {
+    const tarea = tareas.value.find((t) => t.id === id)
+    if(tarea) updateDoc(doc(db, 'tareas', id), { estado: SIGUIENTE[tarea.estado]})
   }
 
-  function avanzar(id: number) {
-    const tarea = tareas.value.find((tarea) => tarea.id === id)
-    if (tarea) tarea.estado = 'en-curso'
+  const eliminar = (id: string) => deleteDoc(doc(db, 'tareas', id)) 
+
+  return {
+    tareas,
+    filtro,
+    visibles,
+    pendientes,
+    agregar,
+    avanzar,
+    eliminar,
+    cargando,
+    error,
   }
-
-  function eliminar (id: number) {
-    tareas.value = tareas.value.filter((tarea) => tarea.id !== id)
-  }
-
-  async function cargar() {
-    cargando.value = true
-    error.value = null
-
-    try {
-      tareas.value = await fetchTareas()
-    } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Error desconocido'
-    } finally {
-      cargando.value = false
-    }
-
-  }
-
-
-  return { tareas, filtro, visibles, pendientes, agregar, avanzar, eliminar, cargando, error, cargar}
-
 })

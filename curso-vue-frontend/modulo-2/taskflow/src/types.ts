@@ -1,4 +1,4 @@
-export type Rol = 'admin' | 'miembro'
+export type Rol = 'admin' | 'miembro' | 'lector'
 export type Estado = 'pendiente' | 'en-curso' | 'hecha'
 export type Filtro = Estado | 'todas'
 
@@ -8,14 +8,16 @@ export interface Proyecto {
 }
 
 export interface Tarea {
-  id: number
+  id: string
   proyectoId: number
   titulo: string
   estado: Estado
+  uid: string
+  creada: number
 }
 
 export interface Usuario {
-  id: number
+  id: string
   nombre: string
   rol: Rol
 }

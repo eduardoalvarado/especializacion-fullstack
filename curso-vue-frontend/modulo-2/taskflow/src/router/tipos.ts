@@ -1,3 +1,4 @@
+import type { Permiso } from '@/lib/permisos'
 import type { RouteRecordInfo } from 'vue-router'
 
 export interface RutasTaskFlow {
@@ -9,7 +10,14 @@ export interface RutasTaskFlow {
     { id: number | string },
     { id: string }
   >
+  'proyecto-ajustes': RouteRecordInfo<
+    'proyecto-ajustes',
+    '/proyectos/:id/ajustes',
+    { id: number | string },
+    { id: string }
+  >
   login: RouteRecordInfo<'login', '/login'>
+  'sin-acceso': RouteRecordInfo<'sin-acceso', '/sin-acceso'>
   'no-encontrada': RouteRecordInfo<
     'no-encontrada',
     '/:pathMatch(.*)*',
@@ -20,8 +28,8 @@ export interface RutasTaskFlow {
 
 declare module 'vue-router' {
   interface RouteMeta {
-    requireAuth?: boolean
-    soloAdmin?: boolean
+    requiereAuth?: boolean
+    permiso?: Permiso
   }
 
   interface TypesConfig {

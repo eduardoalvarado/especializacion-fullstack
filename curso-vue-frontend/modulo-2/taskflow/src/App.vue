@@ -1,10 +1,22 @@
 <script setup lang="ts">
+import { watch } from 'vue'
+import { useRoute, useRouter} from 'vue-router'
 import BarraSuperior from './components/BarraSuperior.vue'
-import { useProyectosStore } from './stores/proyectos.ts';
-import { useTareasStore } from './stores/tareas.ts';
+import { useSesionStore } from './stores/sesion.ts';
 
-useTareasStore().cargar()
-useProyectosStore().cargar()
+const sesion = useSesionStore()
+const route = useRoute()
+const router = useRouter()
+
+
+//Este watch evalua si la sesion termina en cualquier momento, incluso desde otra pestania, si esto pasa volvemos al login
+watch(
+  () => sesion.estado,
+  (estado) => {
+    if(estado === 'anonimo' && route.meta.requiereAuth)
+      router.push({ name: 'login'})
+  }
+)
 
 </script>
 

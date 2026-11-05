@@ -1,33 +1,81 @@
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { defineStore } from 'pinia'
-import type { Usuario } from '../types'
-import { borrar, guardar, leer } from '@/lib/almacenamiento'
+import type { Usuario, Rol } from '../types'
 
-const CLAVE = 'taskflow:sesion'
+import {
+  GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  signOut,
+} from 'firebase/auth'
+import { useCurrentUser, useFirebaseAuth, useDocument } from 'vuefire'
+import { doc } from 'firebase/firestore'
+import { db } from '@/services/firebase'
+import { PERMISOS, type Permiso } from '@/lib/permisos'
 
-export const USUARIOS_DEMO: Usuario[] = [
-  { id: 1, nombre: 'Ana', rol: 'admin' },
-  { id: 2, nombre: 'Luis', rol: 'miembro' },
-]
+export type EstadoSesion = 'cargando' | 'anonimo' | 'autenticado'
 
 export const useSesionStore = defineStore('sesion', () => {
+  //state
+  const auth = useFirebaseAuth()!
+  const actual = useCurrentUser()
 
-  const usuario = ref<Usuario | null>(leer<Usuario | null >(CLAVE, null))
+  const { data: perfil, error } = useDocument<{ rol: Rol }>(
+    () => (actual.value ? doc(db, 'usuarios', actual.value.uid) : null),
+    { reset: () => undefined },
+  )
 
+  const rol = computed<Rol>(() => {
+    const actual = perfil.value?.rol
+    return actual && actual in PERMISOS ? actual : 'lector'
+  })
+
+  const estado = computed<EstadoSesion>(() => {
+    if (actual.value === undefined && !error.value) return 'cargando'
+    return actual.value ? 'autenticado' : 'anonimo'
+  })
+
+  const usuario = computed<Usuario | null>(() =>
+    actual.value && estado.value === 'autenticado'
+      ? {
+          id: actual.value.uid,
+          nombre: actual.value.displayName ?? actual.value.email ?? 'Tú',
+          rol: rol.value,
+        }
+      : null,
+  )
+
+  //getters
   const autenticado = computed(() => usuario.value !== null)
 
-  const esAdmin = computed(() => usuario.value?.rol === 'admin')
+  const puede = (permiso: Permiso) => PERMISOS[rol.value]?.includes(permiso) ?? false
 
-  watch(usuario, (valor) => (valor ? guardar(CLAVE, valor) : borrar(CLAVE)))
+  const lista = () =>
+    estado.value !== 'cargando'
+      ? Promise.resolve()
+      : new Promise<void>((ok) => watch(estado, () => ok(), { once: true }))
 
-  function entrar(id: number) {
-    usuario.value = USUARIOS_DEMO.find((u) => u.id === id) ?? null
+  //actions
+  const registrar = (correo: string, clave: string) =>
+    createUserWithEmailAndPassword(auth, correo, clave)
+
+  const entrar = (correo: string, clave: string) => signInWithEmailAndPassword(auth, correo, clave)
+
+  const entrarConGoogle = () => signInWithPopup(auth, new GoogleAuthProvider())
+
+  const salir = () => signOut(auth)
+
+  return {
+    usuario,
+    autenticado,
+    entrar,
+    salir,
+    entrarConGoogle,
+    registrar,
+    estado,
+    lista,
+    rol,
+    puede,
   }
-
-  function salir() {
-    usuario.value = null
-  }
-
-
-  return { usuario, autenticado, esAdmin, entrar, salir }
 })
