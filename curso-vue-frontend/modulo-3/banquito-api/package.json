@@ -1,0 +1,20 @@
+{
+  "name": "banquito-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "API local de Banquito para el módulo 3 (REST, identidad y errores). En memoria; se reinicia con cada arranque.",
+  "scripts": {
+    "api": "node src/server.ts",
+    "api:auth": "AUTH=on node src/server.ts",
+    "dev": "node --watch src/server.ts",
+    "test": "node --test \"test/*.test.ts\""
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.1.6",
+    "hono": "^4.13.16"
+  },
+  "engines": {
+    "node": "^22.18.0 || >=24.12.0"
+  }
+}
