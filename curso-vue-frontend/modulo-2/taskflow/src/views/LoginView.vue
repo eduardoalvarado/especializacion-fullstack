@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSesionStore } from '../stores/sesion'
+import { FirebaseError } from 'firebase/app'
 
 const sesion = useSesionStore()
 const route = useRoute()
@@ -19,7 +20,38 @@ const clave = ref('')
 const creando = ref(false)
 const error = ref<string | null>(null)
 
+const MENSAJES: Record<string, string> = {
+  'auth/invalid-credential': 'Correo o contraseña incorrectos.',
+  'auth/user-not-found': 'Correo o contraseña incorrectos.',
+  'auth/wrong-password': 'Correo o contraseña incorrectos.',
+  'auth/email-already-in-use': 'Ya existe una cuenta con ese correo.',
+  'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres.',
+  'auth/invalid-email': 'El correo no es válido.',
+  'auth/popup-closed-by-user': 'Cerraste la ventana de Google antes de terminar.',
+  'auth/network-request-failed': 'No hay conexión con Firebase.',
+}
 
+async function intentar(accion: () => Promise<unknown>) {
+  error.value = null
+
+  try {
+    await accion()
+    router.push(destino)
+  } catch (e) {
+    error.value =
+      e instanceof FirebaseError
+        ? (MENSAJES[e.code] ?? `Error de Firebase (${e.code})`)
+        : 'Error desconocido'
+  }
+}
+
+const enviar = () => {
+  intentar(() =>
+    creando.value
+      ? sesion.registrar(correo.value, clave.value)
+      : sesion.entrar(correo.value, clave.value),
+  )
+}
 </script>
 
 <template>

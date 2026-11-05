@@ -12,9 +12,7 @@ const cantidad = (proyectoId: number) =>
 <template>
   <h2 class="text-2xl font-bold">Proyectos de vue</h2>
 
-  <p v-if="proyectos.cargando" class="animate-pulse text-center text-slate-500">Cargando proyectos...</p>
-
-  <ul v-else class="flex flex-col gap-3">
+  <ul class="flex flex-col gap-3">
     <li v-for="p in proyectos.proyectos" :key="p.id">
       <RouterLink
         :to="{ name: 'proyectos-tareas', params: { id: p.id } }"

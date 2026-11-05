@@ -1,34 +1,35 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { usePreferenciasStore } from '../stores/preferencias'
 import { useSesionStore } from '../stores/sesion'
 import { useTareasStore } from '../stores/tareas'
-import { useRouter } from 'vue-router'
+import { useFirebaseApp } from 'vuefire'
 
 
 const tareas = useTareasStore()
 const preferencias = usePreferenciasStore()
 const sesion = useSesionStore()
-//uso de router
-const router = useRouter()
 
 // usamos firebase
+const proyecto = useFirebaseApp().options.projectId
 
+// Con la caché persistente la app sigue funcionando sin red: avisamos al usuario
+const enLinea = ref(navigator.onLine)
+const actualizar = () => (enLinea.value = navigator.onLine)
+onMounted(() => {
+  window.addEventListener('online', actualizar)
+  window.addEventListener('offline', actualizar)
+})
+onUnmounted(() => {
+  window.removeEventListener('online', actualizar)
+  window.removeEventListener('offline', actualizar)
+})
 
 //storeToRefs mantiene la reactivdada al sacar una copia del state y los getters del store
 const { usuario } = storeToRefs(sesion)
 
-const enlaces = [
-  {
-    name: 'proyectos',
-    texto: 'Proyectos',
-  },
-] as const
-
-function salir() {
-  sesion.salir()
-  router.push({ name: 'login' })
-}
+const salir = () => sesion.salir()
 </script>
 
 <template>
@@ -37,17 +38,18 @@ function salir() {
       <div class="flex items-baseline gap-3">
         <h1 class="text-xl font-bold">TaskFlow</h1>
         <span class="text-sm">{{ tareas.pendientes }} por hacer</span>
-        
+        <span class="rounded bg-white/15 px-1.5 text-sm" >{{ proyecto }}</span>
+        <span v-if="!enLinea" class="rounded bg-amber-400 px-1.5 text-xs text-slate-900">
+          Sin conexión
+        </span>
       </div>
       <nav>
         <RouterLink
-          v-for="enlace in enlaces"
-          :key="enlace.name"
-          :to="{ name: enlace.name }"
+          :to="{ name: 'proyectos' }"
           class="rounded px-2 py-1 hover:bg-white/10"
           active-class="bg-white/20 font-semibold"
         >
-          {{ enlace.texto }}
+          Proyectos
         </RouterLink>
       </nav>
       <div class="flex flex-wrap items-center gap-2 text-sm">

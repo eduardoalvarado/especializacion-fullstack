@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { Estado, Tarea } from '../types'
+import Puede from './Puede.vue'
 
 defineProps<{ tarea: Tarea }>()
-defineEmits<{ avanzar: [id: number]; eliminar: [id: number] }>()
+defineEmits<{ avanzar: [id: string]; eliminar: [id: string] }>()
 
 const etiquetas: Record<Estado, string> = {
   pendiente: 'Pendiente',
@@ -32,21 +33,25 @@ const colores: Record<Estado, string> = {
     </div>
 
     <div class="flex gap-2">
-      <button
-        v-if="tarea.estado !== 'hecha'"
-        type="button"
-        class="rounded bg-sky-600 px-3 py-1 text-sm text-white hover:bg-sky-700"
-        @click="$emit('avanzar', tarea.id)"
-      >
-        Avanzar
-      </button>
-      <button
-        type="button"
-        class="rounded border border-slate-300 px-3 py-1 text-sm text-slate-600 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
-        @click="$emit('eliminar', tarea.id)"
-      >
-        Eliminar
-      </button>
+      <Puede permiso="tarea:eliminar">
+        <button
+          v-if="tarea.estado !== 'hecha'"
+          type="button"
+          class="rounded bg-sky-600 px-3 py-1 text-sm text-white hover:bg-sky-700"
+          @click="$emit('avanzar', tarea.id)"
+        >
+          Avanzar
+        </button>
+      </Puede>
+      <Puede permiso="tarea:eliminar">
+        <button
+          type="button"
+          class="rounded border border-slate-300 px-3 py-1 text-sm text-slate-600 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
+          @click="$emit('eliminar', tarea.id)"
+        >
+          Eliminar
+        </button>
+      </Puede>
     </div>
   </li>
 </template>

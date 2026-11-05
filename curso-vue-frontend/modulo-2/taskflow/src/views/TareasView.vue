@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
-import { red } from '../services/tareasApi'
-import { useSesionStore } from '../stores/sesion'
 import { useTareasStore } from '../stores/tareas'
 import TareaCard from '../components/TareaCard.vue'
 import NuevaTarea from '../components/NuevaTarea.vue'
 import FiltroTareas from '../components/FiltroTareas.vue'
 import { computed } from 'vue'
+import Puede from '@/components/Puede.vue'
 
 const props = defineProps<{ proyectoId: number }>()
 
-const sesion = useSesionStore()
 const tareas = useTareasStore()
 
 const { visibles, cargando, error } = storeToRefs(tareas)
@@ -32,25 +30,19 @@ const proyectoSeleccionado = computed(() =>
     v-else-if="error"
     class="flex items-center justify-between gap-3 rounded border border-red-300 bg-red-50 px-4 py-3 text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200"
   >
-    <span>{{ error }}</span>
-    <button
-      type="button"
-      class="rounded bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700"
-      @click="tareas.cargar()"
-    >
-      Reintentar
-    </button>
+    <span>{{ error.message }}</span>
   </div>
   <template v-else>
     <ul class="flex flex-col gap-3">
-      <TareaCard
-        v-for="t in proyectoSeleccionado"
-        :key="t.id"
-        :tarea="t"
-        :puede-eliminar="sesion.esAdmin"
-        @avanzar="tareas.avanzar"
-        @eliminar="tareas.eliminar"
-      />
+      <Puede permiso="tarea:crear">
+        <TareaCard
+          v-for="t in proyectoSeleccionado"
+          :key="t.id"
+          :tarea="t"
+          @avanzar="tareas.avanzar"
+          @eliminar="tareas.eliminar"
+        />
+      </Puede>
     </ul>
     <p v-if="visibles.length === 0" class="text-center text-slate-500">
       No hay tareas en esta vista.
