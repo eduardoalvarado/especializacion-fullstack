@@ -14,7 +14,7 @@ export interface Opciones {
 
 const esperar = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
-export function crearApp({ auth = process.env.AUTH === 'on', origen = process.env.CORS_ORIGIN ?? 'http://localhost:5173' }: Opciones = {}) {
+export function crearApp({ auth = process.env.AUTH === 'on', origen = process.env.CORS_ORIGIN ?? 'http://localhost:5174' }: Opciones = {}) {
   const app = new Hono()
 
   app.use(

@@ -1,4 +1,5 @@
-import { mock } from '@/mock/db'
-import type { FiltroMovimientos } from '@/types'
+import { http } from './http'
+import type { FiltroMovimientos, Movimiento, Pagina } from '@/types'
 
-export const listarMovimientos = (filtro: FiltroMovimientos) => mock.movimientos(filtro)
+export const listarMovimientos = (filtro: FiltroMovimientos) =>
+  http.get<Pagina<Movimiento>>('/movimientos', { params: filtro }).then((response) => response.data)

@@ -91,6 +91,6 @@ export const mock = {
   },
   async perfil(): Promise<Perfil> {
     await esperar()
-    return { id: 'u1', usuario: 'Luis', nombre: 'Luis Quispe', correo: 'luis.quispe@example.com' }
+    return { id: 'u1', usuario: 'Luis', nombre: 'Luis Miller', correo: 'luis.miller@example.com' }
   },
 }

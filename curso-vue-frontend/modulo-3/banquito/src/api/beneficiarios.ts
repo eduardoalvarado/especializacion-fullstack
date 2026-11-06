@@ -1,6 +1,17 @@
-import { mock } from '@/mock/db'
+import { http } from './http'
+import type { Beneficiario } from '@/types'
 
-export const listarBeneficiarios = () => mock.beneficiarios()
-export const crearBeneficiario = mock.crearBeneficiario
-export const actualizarBeneficiario = mock.actualizarBeneficiario
-export const eliminarBeneficiario = mock.eliminarBeneficiario
+export type ActualizarBeneficiario = Omit<Beneficiario, 'id' | 'creadoEn'>
+export type NuevoBeneficiario = Omit<ActualizarBeneficiario, 'favorito'>
+
+export const listarBeneficiarios = () =>
+  http.get<Beneficiario[]>('/beneficiarios').then((response) => response.data)
+
+export const crearBeneficiario = (datos: NuevoBeneficiario) =>
+  http.post<Beneficiario>('/beneficiarios', datos).then((response) => response.data)
+
+export const actualizarBeneficiario = (id: string, datos: ActualizarBeneficiario) =>
+  http.put<Beneficiario>(`/beneficiarios/${id}`, datos).then((response) => response.data)
+
+export const eliminarBeneficiario = (id: string) =>
+  http.delete(`/beneficiarios/${id}`).then(() => undefined)

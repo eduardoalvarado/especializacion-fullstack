@@ -1,6 +1,13 @@
+import { useMutation, useQueryCache } from '@pinia/colada'
 import { transferir } from '@/api/transferencias'
-import { useAccion } from '@/lib/accion'
 
 export function useTransferir() {
-  return useAccion(transferir)
+  const cache = useQueryCache()
+  return useMutation({
+    mutation: transferir,
+    onSettled: () =>
+      cache
+        .invalidateQueries({ key: ['cuentas'] })
+        .then(() => cache.invalidateQueries({ key: ['movimientos'] })),
+  })
 }

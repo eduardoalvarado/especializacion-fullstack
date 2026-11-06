@@ -1,6 +1,10 @@
+import { useQuery } from '@pinia/colada'
 import { listarCuentas } from '@/api/cuentas'
-import { useCargar } from '@/lib/cargar'
 
 export function useCuentas() {
-  return useCargar(listarCuentas)
+  return useQuery({
+    key: ['cuentas'],
+    query: listarCuentas,
+    staleTime: 30_000,
+  })
 }

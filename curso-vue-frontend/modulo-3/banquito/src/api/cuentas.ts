@@ -1,3 +1,4 @@
-import { mock } from '@/mock/db'
+import { http } from './http'
+import type { Cuenta } from '@/types'
 
-export const listarCuentas = () => mock.cuentas()
+export const listarCuentas = () => http.get<Cuenta[]>('/cuentas').then((response) => response.data)
