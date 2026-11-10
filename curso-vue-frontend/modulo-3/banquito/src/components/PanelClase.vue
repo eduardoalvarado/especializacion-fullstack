@@ -18,6 +18,10 @@ async function reiniciar() {
   await fetch(`${BASE}/__admin/reset`, { method: 'POST' }).catch(() => {})
   location.reload()
 }
+async function conHtml() {
+  await perilla({ xss: true })
+  location.reload()
+}
 </script>
 
 <template>
@@ -55,6 +59,21 @@ async function reiniciar() {
         @click="reiniciar"
       >
         Reiniciar datos
+      </button>
+      <button
+        class="rounded bg-slate-100 px-2 py-1 text-left hover:bg-slate-200"
+        @click="perilla({ ttlAccesoSeg: 10 })"
+      >
+        Token de acceso de 10s
+      </button>
+      <button
+        class="rounded bg-slate-100 px-2 py-1 text-left hover:bg-slate-200"
+        @click="perilla({ ttlAccesoSeg: 300 })"
+      >
+        Token de acceso de 5 min
+      </button>
+      <button class="rounded bg-slate-100 px-2 py-1 text-left hover:bg-slate-200" @click="conHtml">
+        Añadir movimiento con HTML
       </button>
     </div>
   </div>
