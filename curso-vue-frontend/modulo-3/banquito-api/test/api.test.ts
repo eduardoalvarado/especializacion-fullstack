@@ -78,6 +78,14 @@ describe('núcleo (AUTH=off)', () => {
     const m = await (await app.request('/api/movimientos?cuentaId=c1&limit=1')).json()
     assert.match(m.items[0].concepto, /<img/)
   })
+  it('telemetría: acepta texto plano y no pide token aunque AUTH=on', async () => {
+    const conAuth = crearApp({ auth: true })
+    const evento = { mensaje: 'Fallo de prueba', donde: 'vue:component event handler', ruta: '/resumen' }
+    const r = await conAuth.request('/telemetria', { method: 'POST', body: JSON.stringify(evento) })
+    assert.equal(r.status, 204)
+    const lista = await (await conAuth.request('/telemetria')).json()
+    assert.equal(lista.at(-1).mensaje, 'Fallo de prueba')
+  })
 })
 
 describe('identidad (AUTH=on)', () => {

@@ -29,6 +29,7 @@ export const db = {
   transferenciasHoy: 0,
   idempotencia: new Map<string, { estado: number; cuerpo: unknown }>(),
   contador: { beneficiario: 5, movimiento: 1000 },
+  telemetria: [] as Record<string, unknown>[], // errores que reporta el cliente (sesión 3)
 }
 
 export const PAYLOAD_XSS = `Pago <img src=x onerror="document.title='XSS ejecutado'"> promo`
@@ -40,6 +41,7 @@ export function reiniciar() {
   db.beneficiarios = s.beneficiarios
   db.transferenciasHoy = 0
   db.idempotencia.clear()
+  db.telemetria = []
   db.contador = { beneficiario: 5, movimiento: 1000 }
   Object.assign(config, CONFIG_INICIAL)
 }

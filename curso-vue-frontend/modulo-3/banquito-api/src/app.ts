@@ -14,7 +14,7 @@ export interface Opciones {
 
 const esperar = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
-export function crearApp({ auth = process.env.AUTH === 'on', origen = process.env.CORS_ORIGIN ?? 'http://localhost:5174' }: Opciones = {}) {
+export function crearApp({ auth = process.env.AUTH === 'on', origen = process.env.CORS_ORIGIN ?? 'http://localhost:5173' }: Opciones = {}) {
   const app = new Hono()
 
   app.use(
@@ -42,6 +42,18 @@ export function crearApp({ auth = process.env.AUTH === 'on', origen = process.en
     reiniciarIdentidad()
     return c.json({ ok: true })
   })
+
+  // ── Telemetría (sesión 3): los errores inesperados del cliente llegan aquí ──
+  // Llega como texto (sendBeacon) para no necesitar preflight CORS; se ve en la terminal.
+  app.post('/telemetria', async (c) => {
+    const evento = await c.req.json().catch(() => null)
+    if (evento && typeof evento === 'object') {
+      db.telemetria.push({ ...evento, recibido: new Date().toISOString() })
+      console.log('⚠ telemetría', JSON.stringify(evento))
+    }
+    return c.body(null, 204)
+  })
+  app.get('/telemetria', (c) => c.json(db.telemetria))
 
   if (auth) app.route('/', rutasIdentidad())
 
