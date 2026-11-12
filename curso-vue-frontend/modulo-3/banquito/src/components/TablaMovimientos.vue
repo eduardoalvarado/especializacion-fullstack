@@ -14,7 +14,7 @@ defineProps<{ movimientos: Movimiento[] }>()
     >
       <div class="min-w-0">
         <!-- v-html a propósito: el concepto puede traer formato. En la sesión 2 se vuelve el hueco de XSS -->
-        <p class="truncate text-sm font-medium" v-html="m.concepto"></p>
+        <p class="truncate text-sm font-medium" {{ m.concepto }}></p>
         <p class="text-xs text-slate-400">{{ fecha(m.fecha) }} · {{ m.categoria }}</p>
       </div>
       <p

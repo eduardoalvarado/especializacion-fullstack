@@ -1,5 +1,6 @@
 import axios, { type AxiosError } from 'axios'
 import { getToken } from '@/auth/token'
+import { renovar } from '@/auth/sesion'
 
 export class ApiError extends Error {
   status: number
@@ -27,11 +28,17 @@ http.interceptors.request.use((config) => {
 
 http.interceptors.response.use(
   (respuesta) => respuesta,
-  (e: AxiosError<{ code?: string; message?: string; fields?: Record<string, string> }>) => {
+  async (e: AxiosError<{ code?: string; message?: string; fields?: Record<string, string> }>) => {
+    const peticion = e.config as (typeof e.config & { _reintento?: boolean }) | undefined
+
+    if (e.response?.data?.code === 'TOKEN_EXPIRED' && peticion && !peticion._reintento) {
+      peticion._reintento = true
+      await renovar()
+      return http(peticion)
+    }
     if (!e.response) throw new ApiError('No hay conexion con el servidor', 0, 'NETWORK')
 
     const { status, data } = e.response
-
     throw new ApiError(data?.message ?? 'Error del servidor', status, data?.code, data?.fields)
   },
 )

@@ -1,3 +1,5 @@
+import { iniciarLogin } from '@/auth/oidc'
+import { haySesion } from '@/auth/token'
 import { createRouter, createWebHistory } from 'vue-router'
 
 declare module 'vue-router' {
@@ -40,9 +42,20 @@ export const router = createRouter({
       meta: { requiereSesion: true },
     },
     {
+      path: '/callback',
+      name: 'callback',
+      component: () => import('@/views/CallbackView.vue'),
+    },
+    {
       path: '/:rest(.*)*',
       name: 'no-encontrada',
       component: () => import('@/views/NoEncontrada.vue'),
     },
   ],
+})
+
+router.beforeEach((to) => {
+  if (!to.meta.requiereSesion || haySesion()) return true
+  iniciarLogin(to.fullPath)
+  return false
 })

@@ -1,4 +1,14 @@
 <script setup lang="ts">
+import { useRouter } from 'vue-router'
+import { cerrarSesion } from '@/auth/sesion'
+import { usuario } from '@/auth/token'
+
+const router = useRouter()
+async function salir() {
+  await cerrarSesion()
+  router.push('/')
+}
+
 const enlaces = [
   { to: '/', texto: 'Resumen' },
   { to: '/movimientos', texto: 'Movimientos' },
@@ -26,6 +36,10 @@ const enlaces = [
           {{ e.texto }}
         </RouterLink>
       </nav>
+      <template v-if="usuario">
+        <span class="text-sm text-slate-500"> Hola, {{ usuario.nombre }}</span>
+        <button @click="salir" class="text-sm text-slate-500 hover:text-teal-700">Salir</button>
+      </template>
       <!-- TODO(s2): aquí van el nombre de la persona con sesión y el botón «Salir» -->
       <RouterLink to="/perfil" class="text-sm text-slate-500 hover:text-teal-700"
         >Mi perfil</RouterLink
