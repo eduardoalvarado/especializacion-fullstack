@@ -22,6 +22,12 @@ async function conHtml() {
   await perilla({ xss: true })
   location.reload()
 }
+function romperComponente() {
+  throw new Error('Fallo de prueba en un componente')
+}
+function promesaSinCatch() {
+  void Promise.reject(new Error('Promesa rechazada sin catch'))
+}
 </script>
 
 <template>
@@ -53,6 +59,18 @@ async function conHtml() {
         @click="perilla({ fallarProximas: 1 })"
       >
         Fallar la próxima petición
+      </button>
+      <button
+        class="rounded bg-slate-100 px-2 py-1 text-left hover:bg-slate-200"
+        @click="romperComponente"
+      >
+        Error en un componente
+      </button>
+      <button
+        class="rounded bg-slate-100 px-2 py-1 text-left hover:bg-slate-200"
+        @click="promesaSinCatch"
+      >
+        Promesa sin catch
       </button>
       <button
         class="rounded bg-slate-100 px-2 py-1 text-left hover:bg-slate-200"
