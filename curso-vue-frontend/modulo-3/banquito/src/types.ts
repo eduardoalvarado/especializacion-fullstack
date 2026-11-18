@@ -65,3 +65,12 @@ export interface Transferencia {
   movimiento: Movimiento
   saldo: number
 }
+
+// Lo que se guarda de cada transferencia en IndexedDB (sesión 4)
+export interface Comprobante {
+  id: string
+  fecha: string
+  concepto: string
+  monto: number
+  saldo: number
+}
