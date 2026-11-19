@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ComprobantesLocales from '@/components/ComprobantesLocales.vue'
 import FavoritosRapidos from '@/components/FavoritosRapidos.vue'
 import FormTransferir from '@/components/FormTransferir.vue'
 </script>
@@ -7,4 +8,5 @@ import FormTransferir from '@/components/FormTransferir.vue'
   <h1 class="text-2xl font-semibold">Transferir</h1>
   <FavoritosRapidos />
   <FormTransferir />
+  <ComprobantesLocales />
 </template>

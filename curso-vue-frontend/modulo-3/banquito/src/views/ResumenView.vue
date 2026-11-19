@@ -6,6 +6,7 @@ import TablaMovimientos from '@/components/TablaMovimientos.vue'
 import TarjetaCuenta from '@/components/TarjetaCuenta.vue'
 import { useCuentas } from '@/queries/useCuentas'
 import { useMovimientos } from '@/queries/useMovimientos'
+import { ocultarSaldos } from '@/storage'
 
 const cuentas = useCuentas()
 const ultimos = useMovimientos(() => ({ cuentaId: '', q: '', tipo: '', page: 1, limit: 5 }))
@@ -13,7 +14,15 @@ const items = computed(() => ultimos.data.value?.items ?? [])
 </script>
 
 <template>
-  <h1 class="text-2xl font-semibold">Hola, Luis</h1>
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-semibold">Hola, Luis</h1>
+    <button
+      class="rounded-lg px-3 py-1.5 text-sm text-slate-600 ring-1 ring-slate-200 hover:bg-slate-100"
+      @click="ocultarSaldos = !ocultarSaldos"
+    >
+      {{ ocultarSaldos ? 'Mostrar saldos' : 'Ocultar Saldos' }}
+    </button>
+  </div>
 
   <EstadoCarga
     :cargando="cuentas.isPending.value && !cuentas.data.value"
