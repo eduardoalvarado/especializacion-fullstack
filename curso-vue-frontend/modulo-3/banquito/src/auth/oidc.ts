@@ -1,7 +1,7 @@
 import { aleatorio, huella } from './pkce'
 import { CLIENTE, EMISOR, REDIRECCION, pedirTokens } from './servidor'
 
-import { setToken } from './token'
+import { guardarTokens } from './sesion'
 
 export async function iniciarLogin(destino = '/') {
   const verifier = aleatorio()
@@ -35,6 +35,6 @@ export async function completarLogin(params: URLSearchParams) {
     code_verifier: guardado.verifier,
   })
 
-  setToken(data.access_token, data.id_token)
+  guardarTokens(data)
   return guardado.destino as string
 }

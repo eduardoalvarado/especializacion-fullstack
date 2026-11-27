@@ -2,6 +2,7 @@
 import BarraSuperior from '@/components/BarraSuperior.vue'
 import PanelClase from '@/components/PanelClase.vue'
 import ToastHost from '@/components/ToastHost.vue'
+import SesionTerminada from './components/SesionTerminada.vue'
 </script>
 
 <template>
@@ -10,6 +11,7 @@ import ToastHost from '@/components/ToastHost.vue'
     <main class="mx-auto flex max-w-4xl flex-col gap-6 p-6">
       <RouterView />
     </main>
+    <SesionTerminada />
     <ToastHost />
     <PanelClase />
   </div>

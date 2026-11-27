@@ -25,6 +25,11 @@ async function conHtml() {
 function romperComponente() {
   throw new Error('Fallo de prueba en un componente')
 }
+
+async function revocar() {
+  await fetch(`${BASE}/__admin/revocar`, { method: 'POST' }).catch(() => {})
+}
+
 function promesaSinCatch() {
   void Promise.reject(new Error('Promesa rechazada sin catch'))
 }
@@ -65,6 +70,9 @@ function promesaSinCatch() {
         @click="romperComponente"
       >
         Error en un componente
+      </button>
+      <button class="rounded bg-slate-100 px-2 py-1 text-left hover:bg-slate-200" @click="revocar">
+        Revocar la sesión (servidor)
       </button>
       <button
         class="rounded bg-slate-100 px-2 py-1 text-left hover:bg-slate-200"

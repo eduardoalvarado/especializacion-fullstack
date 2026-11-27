@@ -1,6 +1,6 @@
 import axios, { type AxiosError } from 'axios'
 import { getToken } from '@/auth/token'
-import { renovar } from '@/auth/sesion'
+import { renovar, terminarSesion } from '@/auth/sesion'
 
 export class ApiError extends Error {
   status: number
@@ -33,7 +33,10 @@ http.interceptors.response.use(
 
     if (e.response?.data?.code === 'TOKEN_EXPIRED' && peticion && !peticion._reintento) {
       peticion._reintento = true
-      await renovar()
+      await renovar().catch(() => {
+        terminarSesion('expirada')
+        throw new ApiError('Tu sesion expiro', 401, 'SESSION_EXPIRED')
+      })
       return http(peticion)
     }
     if (!e.response) throw new ApiError('No hay conexion con el servidor', 0, 'NETWORK')
